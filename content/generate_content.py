@@ -6,12 +6,6 @@ from thirdparty.openai_assistant import AssistantAPI
 
 logger = get_logger(__name__)
 
-# client = AzureOpenAI(
-#     api_key="42ef311b5f274981be65da45d46bac65",
-#     api_version="2024-02-15-preview",
-#     azure_endpoint = "https://njcswedencentral.openai.azure.com/"
-# )
-
 instructions = '''
  
 You are a SEO writer and create content for getting good page rank of image editing tools.
@@ -40,12 +34,47 @@ Please write below content for feature {feature}.
 
 '''
 
-# Create an assistant
-# assistant = client.beta.assistants.create(
-#     name="SEO Writer",
-#     instructions=instructions,
-#     model="njc-assistant-gpt4-32k" #You must replace this value with the deployment name for your model.
-# )
+intro_prompt = '''
+Please write below content for feature {feature}. The output should be in JSON format with below schema.
+{
+
+	"title" : "Free Remove Background Tool for Exceptional Image Editing",
+	"desc": "Effortlessly trim away the clutter from your images with our free Remove Background tool",
+	"keywords": [
+        "Remove background online",
+        "Background removal",
+        "Online background eraser",
+        "Background replacement",
+        "Transparent background",
+        "AI background removal"
+    ],
+	"intro": {
+        "img": {
+            "src": "assets/img/no-preview.png",
+            "alt": ""
+        },
+        "title": "Free Online Remove Background Tool",
+        "desc": "Experience Seamless Image Enhancement with our Free Remove Background Tool",
+        "uploadBtnText": "Upload Image",
+        "dragDropText": "Drag & Drop image files!"
+    }
+}
+'''
+
+qna_prompt = '''
+Please write 7 SEO friendly question and answer around {feature}. The output should be in JSON format with below schema.
+{
+    "items": [
+        {
+            "ques": "How effective is the free Remove Background tool?",
+            "ans": "You can expect high-quality, professional results with our free Remove Background tool."
+        }
+    ]
+}
+    
+
+    
+'''    
 
 client = AssistantAPI.create_client(
             api_key="42ef311b5f274981be65da45d46bac65",
@@ -60,13 +89,40 @@ assistant = client.beta.assistants.create(
             )
  
 def create_seo_content():
-    feature = 'Png Maker'
-    str=prompt.replace("{feature}", feature)
+    feature = 'Png Maker'  
+    feature_content = {}
+    feature_content=create_intro(
+            feature_content=feature_content,
+            feature=feature
+        )
+    feature_content = create_qna(
+            feature_content=feature_content,
+            feature=feature
+        )
+    print(f"feature_content={feature_content}") 
+    
+def create_intro(feature_content, feature):
+    str=intro_prompt.replace("{feature}", feature)
     assistant_api = AssistantAPI(client)
+    print(f"content after prompt is replaced with feature name=[{str}]")
     response = assistant_api.execute_thread_with_content(
-        client=client,
         content=str, 
-        assistant=assistant, 
-        prompt=prompt, 
+        assistant=assistant,
         thread=assistant_api.create_thread())
-    print(f"response={response}")
+    feature_content=json.loads(response)
+    return feature_content
+
+def create_qna(feature_content, feature):
+    str=qna_prompt.replace("{feature}", feature)
+    assistant_api = AssistantAPI(client)
+    print(f"content after prompt is replaced with feature name=[{str}]")
+    response = assistant_api.execute_thread_with_content(
+        content=str, 
+        assistant=assistant,
+        thread=assistant_api.create_thread())
+    items=json.loads(response)
+    feature_content["h1"] = "FAQ: Frequently Asked Questions"
+    feature_content["h2"] = ""
+    feature_content["type"] = "faq"
+    feature_content["items"] = items
+    return feature_content   

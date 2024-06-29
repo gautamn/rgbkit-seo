@@ -26,51 +26,8 @@ class AssistantAPI:
     def create_thread(self):
         return self.client.beta.threads.create()
     
-    def execute_thread_with_multiple_contents(self, content_parts, prompt, assistant, thread):
-        all_responses_in_str = []  # To store messages from all parts
-        try:      
-            for i, content in enumerate(content_parts, start=1):          
-                logger.debug(f"processing part {i} of {len(content_parts)}, length: {len(content)}")
-                new_prompt = prompt.replace("{text}", content)
-                #logger.debug("$$$$$$$$$$$ new_prompt=%s", new_prompt)
-                result = self.call_assistant_api(
-                            assistant=assistant,
-                            content=new_prompt, 
-                            thread=thread
-                        )
-                logger.debug("$$$ chunk result=%s", result)
-                all_responses_in_str.append(result)
-        except Exception as e:
-                logger.error(e)
-                logger.error("error occured while getting data for chunks!") 
-        return all_responses_in_str
-
-
-    def execute_thread_with_content(self, content, summarizer_assistant, prompt, thread):
-        result=''
-        try:
-            str = ''
-            if content is not None:
-                if len(content) > 32000:
-                    content = content[:32000] #just take 32 chacters for summary
-                str=prompt.replace("{text}", content)
-            else:
-                str = prompt    
-            #logger.debug("content=%s", content)
-            #logger.debug("prompt=%s", str)
-            result = self.call_assistant_api(
-                        assistant=summarizer_assistant,
-                        content=str,
-                        thread=thread
-                    )
-        except Exception as e:
-                logger.error(e)
-                logger.error("error occured while getting content summary!!")
-        
-        return result
-
-
-    def execute_thread_with_json_content(self, content, assistant, thread):
+    
+    def execute_thread_with_content(self, content, assistant, thread):
         result=''
         try:
             result = self.call_assistant_api(
@@ -82,7 +39,7 @@ class AssistantAPI:
                 logger.error(e)
                 logger.error("error occured while getting content summary!!")
         
-        return result        
+        return result
 
 
     def call_assistant_api(self, assistant, content, thread):
