@@ -12,17 +12,6 @@ You content should be SEO friendly and should be optimised for improving the SEO
 The content of different parts should be different from each other but should be SEO friendly. 
 '''
 
-prompt = '''
-
-Please write below content for feature {feature}.
-
-6. Heading : 1 line about the {feature} in not more than 50-60 characters.
-
-7. Paragraph : 2-4 lines about the {feature} in which usecases will be mentioned. 
-
-
-'''
-
 intro_prompt = '''
 Please write below content for feature {feature}. The output should be in JSON format with below schema.
 {
@@ -50,8 +39,32 @@ Please write below content for feature {feature}. The output should be in JSON f
 }
 '''
 
+heading_prompt = '''
+Please write 1 line about the {feature} in not more than 50-60 characters.
+The output should be in JSON format with below schema.
+{
+    "type": "heading",
+    "h1": "Experience Seamless Image Enhancement with our Free Remove Background Tool",
+    "p": "Make your images stand out with our free Remove Background tool, designed to delete unwanted backgrounds effortlessly. Try it now to unlock the true potential of your pictures!"
+}
+
+'''
+
 usecase_prompt = '''
 Please write 5 use cases as to why use {feature} in the form use case of 3-4 words and then desc in not more than 10-12 words.
+The output should be in JSON format with below schema.
+{
+    "items": [
+       {
+            "h1": "Product Photo Enhancement",
+            "p": "Improve product photos by removing distracting backgrounds."
+        }
+    ]
+}
+'''
+
+detailed_usecase_prompt = '''
+Please write 5 use cases of {feature} . The 'p' element in below json should be about 3-5 sentence about the usecase. 
 The output should be in JSON format with below schema.
 {
     "items": [
@@ -75,7 +88,35 @@ Please write 7 SEO friendly question and answer around {feature}. The output sho
     ]
 }
    
-'''    
+'''
+
+steps = '''
+
+{
+        "type": "steps",
+        "h1": "How to Use Our Free {feature}",
+        "p": "",
+        "steps": [
+            {
+                "title": "Upload Your Photo",
+                "desc": "Upload your photo or image from your computer",
+                "url": ""
+            },
+            {
+                "title": "Wait for Second",
+                "desc": "It will take 5 t0 8 second to {feature}",
+                "url": ""
+            },
+            {
+                "title": "Download",
+                "desc": "Download your photo with {feature}",
+                "url": ""
+            }
+        ]
+    }
+
+'''
+    
 
 client = AssistantAPI.create_client(
             api_key="42ef311b5f274981be65da45d46bac65",
@@ -97,19 +138,34 @@ def create_seo_content():
             feature_content=feature_content,
             feature=feature
         )
-    print(f"******* feature_content={feature_content}") 
-    section_usecase=find_usecases(
+    
+    section_steps=steps.replace("{feature}", feature)
+    sections.append(json.loads(section_steps))
+    
+    section_heading=find_heading(
             feature=feature
         ) 
-    sections.append(section_usecase)
+    sections.append(section_heading)
+    
+    detailed_usecases=find_detailed_usecases(
+            feature=feature
+        ) 
+    sections.append(detailed_usecases)
+    
+    usecases=find_usecases(
+            feature=feature
+        ) 
+    sections.append(usecases)
     
     section_faq=create_qna(
             feature=feature
-        )
+        ) 
     sections.append(section_faq)
     
     feature_content["sections"] = sections
+    print("*********************************************************************************")
     print(f"feature_content={feature_content}") 
+    print("*********************************************************************************")
     
 def create_intro(feature_content, feature):
     str=intro_prompt.replace("{feature}", feature)
@@ -121,6 +177,44 @@ def create_intro(feature_content, feature):
         thread=assistant_api.create_thread())
     feature_content=json.loads(response)
     return feature_content
+
+def find_heading(feature):
+    str=heading_prompt.replace("{feature}", feature)
+    assistant_api = AssistantAPI(client)
+    response = assistant_api.execute_thread_with_content(
+        content=str, 
+        assistant=assistant,
+        thread=assistant_api.create_thread())
+    result=json.loads(response)
+    section_heading={}
+    section_heading["type"] = result['type']
+    section_heading["h1"] = result['h1']
+    section_heading["p"] = result['p']
+    return section_heading
+
+def find_detailed_usecases(feature):
+    str=detailed_usecase_prompt.replace("{feature}", feature)
+    assistant_api = AssistantAPI(client)
+    response = assistant_api.execute_thread_with_content(
+        content=str, 
+        assistant=assistant,
+        thread=assistant_api.create_thread())
+    result=json.loads(response)
+    
+    arr = []
+    for item in result["items"]:
+        print(f"item={item}")
+        tmp_usecase = {}
+        tmp_usecase["type"]= "section"
+        tmp_usecase["h1"]= item["h1"]
+        tmp_usecase["p"]= item["p"]
+        tmp_usecase["img"]={
+                "src": "assets/img/no-preview.png",
+                "alt": ""
+            }
+        tmp_usecase["buttons"]=[]
+        arr.append(tmp_usecase)
+    return arr
 
 def find_usecases(feature):
     str=usecase_prompt.replace("{feature}", feature)
