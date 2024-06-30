@@ -130,8 +130,8 @@ assistant = client.beta.assistants.create(
                 model="njc-assistant-gpt4-32k"
             )
  
-def create_seo_content():
-    feature = 'Png Maker' 
+def create_seo_content(feature):
+    #feature = 'Gif Maker' 
     sections=[] 
     feature_content = {}
     feature_content=create_intro(

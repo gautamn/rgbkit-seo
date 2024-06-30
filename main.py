@@ -16,11 +16,11 @@ if __name__ == "__main__":
    else:
          utility_name = sys.argv[1] 
          if utility_name == 'SEO_CONTENT':
-              if len(sys.argv) == 1:
-                     logger.info("utility name is missing.")
-                     logger.info("Usage: python main.py SEO_CONTENT")
+              if len(sys.argv) == 2:
+                     logger.info("utility name or feature name is missing.")
+                     logger.info("Usage: python main.py SEO_CONTENT <feature name in quotes>")
                      sys.exit()
-              create_seo_content()                                                                                             
+              create_seo_content(sys.argv[2])                                                                                             
        
          
              
