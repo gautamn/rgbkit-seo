@@ -2,6 +2,7 @@ import sys
 from logger import get_logger
 from content.generate_content import create_seo_content
 from content.translate_content import translate_file_content
+from content.create_blog import write_blog
 
 logger = get_logger(__name__)
 
@@ -29,7 +30,15 @@ if __name__ == "__main__":
                      logger.info("utility name or feature name is missing.")
                      logger.info("Usage: python main.py TRANSLATE <absolute file path>")
                      sys.exit()
-              translate_file_content(sys.argv[2])     
+              translate_file_content(sys.argv[2])
+
+         # python main.py WRITE_BLOG "Remove Bankground"      
+         elif utility_name == 'WRITE_BLOG':
+              if len(sys.argv) == 2:
+                     logger.info("utility name or feature name is missing.")
+                     logger.info("Usage: python main.py WRITE_BLOG <feature name in quotes>")
+                     sys.exit()
+              write_blog(sys.argv[2])         
 
 
        

@@ -125,7 +125,7 @@ client = AssistantAPI.create_client(
         )
 
 assistant = client.beta.assistants.create(
-                name="Guilty Judgment Pronouncement Assistant",
+                name="SEO Writer",
                 instructions=instructions,
                 model="njc-assistant-gpt4-32k"
             )
