@@ -17,6 +17,7 @@ if __name__ == "__main__":
           sys.exit()
    else:
          utility_name = sys.argv[1] 
+         # python main.py SEO_CONTENT "Crop Image" 
          if utility_name == 'SEO_CONTENT':
               if len(sys.argv) == 2:
                      logger.info("utility name or feature name is missing.")
@@ -24,7 +25,7 @@ if __name__ == "__main__":
                      sys.exit()
               create_seo_content(sys.argv[2])
 
-         # python main.py TRANSLATE C:/my-workspace/seo-content/gif-maker.json    
+         # python main.py TRANSLATE "C:/my-workspace/seo-content/gif-maker.json"    
          elif utility_name == 'TRANSLATE':
               if len(sys.argv) == 2:
                      logger.info("utility name or feature name is missing.")
