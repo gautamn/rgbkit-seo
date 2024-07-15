@@ -28,7 +28,7 @@ Please write below content for feature {feature}. The output should be in JSON f
     ],
 	"intro": {
         "img": {
-            "src": "assets/img/no-preview.png",
+            "src": "",
             "alt": ""
         },
         "title": "Free Online Remove Background Tool",
@@ -149,8 +149,9 @@ def create_seo_content(feature):
     
     detailed_usecases=find_detailed_usecases(
             feature=feature
-        ) 
-    sections.append(detailed_usecases)
+        )
+    for detailed_usecase in detailed_usecases: 
+        sections.append(detailed_usecase)
     
     usecases=find_usecases(
             feature=feature
