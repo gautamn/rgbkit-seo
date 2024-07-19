@@ -1,8 +1,7 @@
 from logger import get_logger
-import traceback, time, json
-from dotenv import load_dotenv
 from thirdparty.openai_assistant import AssistantAPI
 import os
+import requests
 
 logger = get_logger(__name__)
 
@@ -47,23 +46,29 @@ assistant = client.beta.assistants.create(
                 model="njc-assistant-gpt4-32k"
             )
 
-def create_sitemap_file(file_path):
-   #print(f"file_path={file_path}")
-    with open(file_path, 'r', encoding='utf-8') as file:
+valid_urls_filename="valid_urls.txt"
+output_sitemap_filename = "new_sitemap.xml"
+
+def create_sitemap_file(new_urls_file_path):
+    
+    # Get the directory name
+    directory = os.path.dirname(new_urls_file_path)    
+    print(f"directory={directory}")
+
+    #Exclude page with 404 error
+    valid_urls_file_path = os.path.join(directory, valid_urls_filename)
+
+    exclude_invalid_urls(new_urls_file_path, valid_urls_file_path)
+    
+    with open(valid_urls_file_path, 'r', encoding='utf-8') as file:
         content = file.read()
 
+    #Generate sitemap
     sitemap=generate_sitemap(content)    
 
-    # Get the directory name
-    directory_name = os.path.dirname(file_path)    
-    print(f"directory_name={directory_name}")
-
-    # Get the base name (file name)
-    file_name=os.path.basename(file_path)
-    print(f"file_name:{file_name}")
-
-    output_file_name = "new_sitemap.xml"
-    save_content(directory_name, output_file_name , sitemap)
+    # Save the response
+    output_sitemap_file_path = os.path.join(directory, output_sitemap_filename)
+    save_content(output_sitemap_file_path , sitemap)
 
 def generate_sitemap(content):
     print("Read Entire File:\n", content)
@@ -75,15 +80,37 @@ def generate_sitemap(content):
         thread=assistant_api.create_thread())
     return response 
 
-def save_content(directory, file_name, content):   
-    # Create the full file path
-    file_path = os.path.join(directory, file_name)
-
-    # Create the directory if it does not exist
-    os.makedirs(directory, exist_ok=True)
-
+def save_content(file_path, content):   
     # Write content to the file
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write(content)
 
-    print(f"File created and content saved at: {file_path}")       
+    print(f"File created and content saved at: {file_path}")
+
+
+def exclude_invalid_urls(new_urls_file_path, valid_urls_filepath):
+    """Reads URLs from a file."""
+    with open(new_urls_file_path, 'r') as file:
+        urls = file.readlines()
+    urls = [url.strip() for url in urls]
+    valid_urls = [url for url in urls if check_url(url)]
+
+    write_valid_urls(valid_urls, valid_urls_filepath)
+
+def check_url(url):
+    """Checks if a URL returns a 404 status code."""
+    try:
+        response = requests.head(url)
+        if response.status_code == 404:
+            print(f"invalid 404 url detected={url}")
+            return False
+        return True
+    except requests.RequestException as e:
+        print(f"Error checking {url}: {e}")
+        return False
+    
+def write_valid_urls(urls, output_file_path):
+    """Writes valid URLs to a new file."""
+    with open(output_file_path, 'w') as file:
+        for url in urls:
+            file.write(url + '\n')               
