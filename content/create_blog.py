@@ -1,6 +1,4 @@
 from logger import get_logger
-import traceback, time, json
-from dotenv import load_dotenv
 from thirdparty.openai_assistant import AssistantAPI
 
 logger = get_logger(__name__)
