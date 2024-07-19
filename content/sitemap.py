@@ -1,7 +1,9 @@
+import os
+
+import requests
+
 from logger import get_logger
 from thirdparty.openai_assistant import AssistantAPI
-import os
-import requests
 
 logger = get_logger(__name__)
 
