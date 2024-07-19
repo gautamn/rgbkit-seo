@@ -104,7 +104,7 @@ steps = '''
             },
             {
                 "title": "Wait for Second",
-                "desc": "It will take 5 t0 8 second to {feature}",
+                "desc": "It will take 5 to 8 second to {feature}",
                 "url": ""
             },
             {
