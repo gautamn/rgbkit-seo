@@ -15,7 +15,7 @@ You SEO file should be a vaild xml and should follow all the norms so that Searc
 """
 
 prompt = """
-Please help me in creating sitemap.xml that I will use for SEO purpose. You need to pick the urls from the given 
+Please help me in creating sitemap.xml that I will use for SEO purpose. You need to pick only the unique urls from the given 
 text below and add url in loc tag and current timestamp in lastmod tag. The format of the tag would be '2024-06-26T11:55:48+00:00'. 
 
 The structure of the sitemap.xml is 
