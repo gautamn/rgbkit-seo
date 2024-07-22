@@ -24,16 +24,12 @@ from the language code nd translate the page accordingly.
 - The final json should be a valid json without any illegal characters.
 - Just provide the json and no extra comments before or after the json. 
 
-
-
 CONTENT: {content}
-
-
 
 '''
 
-lang_codes = ["de", "fr", "ru", "tr", "id", "pt", "ro", "es", "ja", "it", "hi", "ar", "nl", "ko", "th", "vi"]
-#lang_codes = ["ind"]
+lang_codes = ["de", "fr", "ru", "tr", "ind", "pt", "ro", "es", "ja", "it", "hi", "ar", "nl", "ko", "th", "vi"]
+#lang_codes = ["hi", "th"]
               
 client = AssistantAPI.create_client(
             api_key="42ef311b5f274981be65da45d46bac65",

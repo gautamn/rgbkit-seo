@@ -14,6 +14,7 @@ The content of different parts should be different from each other but should be
 
 intro_prompt = '''
 Please write below content for feature {feature}. The output should be in JSON format with below schema.
+Please also include my keywords list {keywords} in your generated "keywords".
 {
 
 	"title" : "Free Remove Background Tool for Exceptional Image Editing",
@@ -52,6 +53,7 @@ The output should be in JSON format with below schema.
 
 usecase_prompt = '''
 Please write 5 use cases as to why use {feature} in the form use case of 3-4 words and then desc in not more than 10-12 words.
+Please also include my keywords list {keywords} in your generated content.
 The output should be in JSON format with below schema.
 {
     "items": [
@@ -64,7 +66,8 @@ The output should be in JSON format with below schema.
 '''
 
 detailed_usecase_prompt = '''
-Please write 5 use cases of {feature} . The 'p' element in below json should be about 3-5 sentence about the usecase. 
+Please write 5 use cases of {feature} . The 'p' element in below json should be about 3-5 sentence about the usecase.
+You need to included researched keywords {keywords} in your content. 
 The output should be in JSON format with below schema.
 {
     "items": [
@@ -78,7 +81,9 @@ The output should be in JSON format with below schema.
 
 
 qna_prompt = '''
-Please write 7 SEO friendly question and answer around {feature}. The output should be in JSON format with below schema.
+Please write 7 SEO friendly question and answer around {feature}. 
+Please also include my keywords list {keywords} in your generated "keywords".
+The output should be in JSON format with below schema.
 {
     "items": [
         {
@@ -130,13 +135,14 @@ assistant = client.beta.assistants.create(
                 model="njc-assistant-gpt4-32k"
             )
  
-def create_seo_content(feature):
+def create_seo_content(feature, keywords):
     #feature = 'Gif Maker' 
     sections=[] 
     feature_content = {}
     feature_content=create_intro(
             feature_content=feature_content,
-            feature=feature
+            feature=feature,
+            keywords=keywords
         )
     
     section_steps=steps.replace("{feature}", feature)
@@ -148,13 +154,15 @@ def create_seo_content(feature):
     sections.append(section_heading)
     
     detailed_usecases=find_detailed_usecases(
-            feature=feature
+            feature=feature,
+            keywords=keywords
         )
     for detailed_usecase in detailed_usecases: 
         sections.append(detailed_usecase)
     
     usecases=find_usecases(
-            feature=feature
+            feature=feature,
+            keywords=keywords
         ) 
     sections.append(usecases)
     
@@ -168,8 +176,9 @@ def create_seo_content(feature):
     print(f"feature_content={feature_content}") 
     print("*********************************************************************************")
     
-def create_intro(feature_content, feature):
+def create_intro(feature_content, feature, keywords):
     str=intro_prompt.replace("{feature}", feature)
+    str=str.replace("{keywords}", keywords)
     assistant_api = AssistantAPI(client)
     print(f"content after prompt is replaced with feature name=[{str}]")
     response = assistant_api.execute_thread_with_content(
@@ -193,8 +202,9 @@ def find_heading(feature):
     section_heading["p"] = result['p']
     return section_heading
 
-def find_detailed_usecases(feature):
+def find_detailed_usecases(feature, keywords:str|None=None):
     str=detailed_usecase_prompt.replace("{feature}", feature)
+    str=str.replace("{keywords}", keywords)
     assistant_api = AssistantAPI(client)
     response = assistant_api.execute_thread_with_content(
         content=str, 
@@ -217,8 +227,9 @@ def find_detailed_usecases(feature):
         arr.append(tmp_usecase)
     return arr
 
-def find_usecases(feature):
+def find_usecases(feature, keywords:str|None=None):
     str=usecase_prompt.replace("{feature}", feature)
+    str=str.replace("{keywords}", keywords)
     assistant_api = AssistantAPI(client)
     response = assistant_api.execute_thread_with_content(
         content=str, 

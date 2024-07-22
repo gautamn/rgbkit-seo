@@ -25,12 +25,12 @@ if __name__ == "__main__":
             if len(sys.argv) == 2:
                 logger.info("utility name or feature name is missing.")
                 logger.info(
-                    "Usage: python main.py SEO_CONTENT <feature name in quotes>"
+                    "Usage: python main.py SEO_CONTENT <feature name in quotes> <researched keywords>"
                 )
                 sys.exit()
-            create_seo_content(sys.argv[2])
+            create_seo_content(sys.argv[2], sys.argv[3])
 
-        # python main.py TRANSLATE "C:/my-workspace/seo-content/gif-maker.json"
+        # python main.py TRANSLATE "I:/My Drive/rgbkit-sharedcontent/tools/compress-png.json"
         elif utility_name == "TRANSLATE":
             if len(sys.argv) == 2:
                 logger.info("utility name or feature name is missing.")
