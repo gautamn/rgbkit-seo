@@ -20,7 +20,7 @@ if __name__ == "__main__":
         sys.exit()
     else:
         utility_name = sys.argv[1]
-        # python main.py SEO_CONTENT "Crop Image"
+        # python main.py SEO_CONTENT "Crop Image" [list of keywords]
         if utility_name == "SEO_CONTENT":
             if len(sys.argv) == 2:
                 logger.info("utility name or feature name is missing.")
