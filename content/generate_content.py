@@ -185,6 +185,8 @@ def create_intro(feature_content, feature, keywords):
         content=str, 
         assistant=assistant,
         thread=assistant_api.create_thread())
+    
+    print(f"$$$$$$$$$$$$$$$$$$$ response={response}")
     feature_content=json.loads(response)
     return feature_content
 
